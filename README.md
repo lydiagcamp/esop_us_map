@@ -14,7 +14,7 @@ Interactive map and panel dataset of Employee Stock Ownership Plans (ESOPs) in t
 
 ## Dataset
 
-`data/esops_panel_geo.rds` · `data/esops_panel_geo.csv`
+`data and code/data/esops_panel_geo.rds` · `data and code/data/esops_panel_geo.csv`
 
 An unbalanced plan-year panel of **171,911 observations** covering **19,968 unique ESOP plans** across all 50 U.S. states. Plans enter and exit the panel as they are established or terminated; the average plan is observed for 8.6 years.
 
@@ -53,9 +53,9 @@ Addresses were geocoded using the [U.S. Census Bureau Geocoder](https://geocodin
 ## Repository structure
 
 ```
-docs/          # GitHub Pages site (map + per-year data files)
-data/          # Downloadable dataset (RDS + CSV)
-scripts/       # R pipeline scripts
+docs/                    # GitHub Pages site (map + per-year data files)
+data and code/data/      # Downloadable dataset (RDS + CSV)
+data and code/code/      # R pipeline scripts
 ```
 
 ---
