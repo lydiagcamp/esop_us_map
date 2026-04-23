@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESOP Plans in the United States</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #header {
+      padding: 12px 20px 10px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
+    }
+
+    #header h1 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 9px;
+      letter-spacing: 0.01em;
+    }
+
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    #year-label {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #111;
+      min-width: 54px;
+      line-height: 1;
+    }
+
+    #year-slider {
+      flex: 1;
+      min-width: 160px;
+      max-width: 460px;
+      accent-color: #555;
+      cursor: pointer;
+      height: 4px;
+    }
+
+    #stats {
+      font-size: 0.78rem;
+      color: #666;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item { white-space: nowrap; }
+    .stat-item strong { color: #111; font-weight: 600; }
+
+    #loading {
+      font-size: 0.78rem;
+      color: #888;
+      display: none;
+    }
+
+    #map-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #map { width: 100%; height: 100%; }
+
+    /* --- Floating legend panel --- */
+    #legend {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 1000;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px 14px 12px;
+      font-size: 0.76rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      max-height: calc(100% - 24px);
+      overflow-y: auto;
+      min-width: 230px;
+    }
+
+    #legend-title {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #333;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 3px 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .legend-row input[type="checkbox"] {
+      margin: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(0,0,0,0.15);
+    }
+
+    .legend-name {
+      flex: 1;
+      color: #333;
+      line-height: 1.3;
+    }
+
+    .legend-count {
+      color: #888;
+      font-variant-numeric: tabular-nums;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .legend-row.dimmed .legend-name,
+    .legend-row.dimmed .legend-count {
+      color: #bbb;
+    }
+
+    /* --- Click hint --- */
+    #map-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 12px;
+      z-index: 1000;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 0.72rem;
+      color: #555;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      pointer-events: none;
+    }
+
+    /* --- Legend footer --- */
+    #legend-footer {
+      margin-top: 10px;
+      padding-top: 7px;
+      border-top: 1px solid #eee;
+      font-size: 0.72rem;
+      color: #999;
+      text-align: center;
+    }
+    #legend-footer a {
+      color: #888;
+      text-decoration: none;
+    }
+    #legend-footer a:hover { text-decoration: underline; }
+
+    /* Compact popups */
+    .leaflet-popup-content {
+      margin: 8px 12px;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      max-width: 260px;
+    }
+    .leaflet-popup-content b {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 1px;
+    }
+    .leaflet-popup-content .popup-meta {
+      color: #666;
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header">
+    <h1>ESOP Plans in the United States &mdash; Form 5500 filings</h1>
+    <div id="controls">
+      <span id="year-label">2000</span>
+      <input type="range" id="year-slider" min="2000" max="2024" value="2000" step="1">
+      <div id="stats">
+        <span class="stat-item">Shown on map: <strong id="stat-visible">&mdash;</strong></span>
+        <span class="stat-item">No location data: <strong id="stat-na">&mdash;</strong></span>
+        <span class="stat-item">Total ESOPs that year: <strong id="stat-total">&mdash;</strong></span>
+      </div>
+      <span id="loading">Loading&hellip;</span>
+    </div>
+  </div>
+
+  <div id="map-wrap">
+    <div id="map"></div>
+
+    <div id="legend">
+      <div id="legend-title">Industries</div>
+      <div id="legend-items"></div>
+      <div id="legend-footer">
+        <a href="https://lydiagcamp.github.io" target="_blank" rel="noopener">lydiagcamp.github.io</a>
+      </div>
+    </div>
+
+    <div id="map-hint">Click any dot for plan details</div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // --- Industry groups: order matters (Other always last) ---
+    const GROUP_ORDER = [
+      'Manufacturing',
+      'Professional & Technical Services',
+      'Finance & Insurance',
+      'Wholesale & Retail',
+      'Construction',
+      'Business Services',
+      'Health, Education & Arts',
+      'Transportation & Utilities',
+      'Other'
+    ];
+
+    // Tableau 10 palette — muted, professional, distinct
+    const GROUP_COLORS = {
+      'Manufacturing':                    '#4E79A7',
+      'Professional & Technical Services':'#59A14F',
+      'Finance & Insurance':              '#E15759',
+      'Wholesale & Retail':               '#F28E2B',
+      'Construction':                     '#B07AA1',
+      'Business Services':                '#76B7B2',
+      'Health, Education & Arts':         '#FF9DA7',
+      'Transportation & Utilities':       '#9C755F',
+      'Other':                            '#BAB0AC'
+    };
+
+    // Fold small groups into adjacent categories at display time
+    const GROUP_REMAP = {
+      'Information': 'Professional & Technical Services'
+    };
+
+    // --- Map setup ---
+    const map = L.map('map', { zoomSnap: 0.5 }).setView([38.5, -96], 4);
+
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+        maxZoom: 19
+      }
+    ).addTo(map);
+
+    // --- State ---
+    const CACHE        = {};
+    const groupVisible = {};
+    GROUP_ORDER.forEach(g => groupVisible[g] = true);
+
+    let groupLayers = {};  // group -> LayerGroup currently on map
+
+    const MARKER_BASE = {
+      radius:      4,
+      weight:      1,
+      color:       '#ffffff',
+      fillOpacity: 0.82
+    };
+
+    // --- Build legend ---
+    (function buildLegend() {
+      const container = document.getElementById('legend-items');
+      GROUP_ORDER.forEach(g => {
+        const row = document.createElement('div');
+        row.className = 'legend-row';
+        row.id = 'row-' + safeId(g);
+
+        const cb = document.createElement('input');
+        cb.type    = 'checkbox';
+        cb.checked = true;
+        cb.addEventListener('change', function () {
+          groupVisible[g] = this.checked;
+          row.classList.toggle('dimmed', !this.checked);
+          if (this.checked) {
+            if (groupLayers[g]) groupLayers[g].addTo(map);
+          } else {
+            if (groupLayers[g]) map.removeLayer(groupLayers[g]);
+          }
+          updateTopStats();
+        });
+
+        const dot = document.createElement('span');
+        dot.className = 'legend-dot';
+        dot.style.background = GROUP_COLORS[g] || '#aaa';
+
+        const name = document.createElement('span');
+        name.className   = 'legend-name';
+        name.textContent = g;
+
+        const count = document.createElement('span');
+        count.className = 'legend-count';
+        count.id        = 'count-' + safeId(g);
+        count.textContent = '—';
+
+        row.appendChild(cb);
+        row.appendChild(dot);
+        row.appendChild(name);
+        row.appendChild(count);
+        container.appendChild(row);
+      });
+    })();
+
+    // --- Render a year's data ---
+    function renderYear(data) {
+      // Remove all existing group layers
+      Object.values(groupLayers).forEach(lg => map.removeLayer(lg));
+      groupLayers = {};
+
+      // Group points by industry
+      const byGroup = {};
+      GROUP_ORDER.forEach(g => byGroup[g] = []);
+
+      data.points.forEach(p => {
+        const raw = GROUP_REMAP[p.g] || p.g;
+        const g   = (raw && GROUP_COLORS[raw]) ? raw : 'Other';
+        byGroup[g].push(p);
+      });
+
+      // Build and add a LayerGroup per industry
+      GROUP_ORDER.forEach(g => {
+        const color   = GROUP_COLORS[g] || '#aaa';
+        const markers = byGroup[g].map(p => {
+          const yearStr = (p.yr1 === p.yr2)
+            ? String(p.yr1)
+            : p.yr1 + '–' + p.yr2;
+
+          return L.circleMarker([p.lat, p.lng],
+            Object.assign({}, MARKER_BASE, { fillColor: color })
+          ).bindPopup(
+            '<b>' + (p.n ? escHtml(p.n) : '<em>Name not available</em>') + '</b>' +
+            (p.c && p.s
+              ? '<span class="popup-meta">' + escHtml(p.c) + ', ' + escHtml(p.s) + '</span><br>'
+              : '') +
+            '<span class="popup-meta">In dataset: ' + yearStr + '</span><br>' +
+            '<span class="popup-meta">Industry: ' + escHtml(g) + '</span>',
+            { maxWidth: 280 }
+          );
+        });
+
+        groupLayers[g] = L.layerGroup(markers);
+        if (groupVisible[g]) groupLayers[g].addTo(map);
+
+        // Update legend count
+        const el = document.getElementById('count-' + safeId(g));
+        if (el) el.textContent = markers.length.toLocaleString();
+      });
+
+      updateTopStats(data);
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    function updateTopStats(data) {
+      // Recount only visible (checked) groups from current layers
+      let shown = 0;
+      GROUP_ORDER.forEach(g => {
+        if (groupVisible[g] && groupLayers[g]) {
+          shown += groupLayers[g].getLayers().length;
+        }
+      });
+      if (data) {
+        document.getElementById('stat-visible').textContent = shown.toLocaleString();
+        document.getElementById('stat-na').textContent      = data.no_loc.toLocaleString();
+        document.getElementById('stat-total').textContent   = data.total.toLocaleString();
+      } else {
+        document.getElementById('stat-visible').textContent = shown.toLocaleString();
+      }
+    }
+
+    // --- Utilities ---
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function safeId(str) {
+      return str.replace(/[^a-zA-Z0-9]/g, '_');
+    }
+
+    // --- Load a year (cache after first load) ---
+    const CACHE_DATA = {};
+    let   currentData = null;
+
+    function loadYear(year) {
+      document.getElementById('year-label').textContent = year;
+      document.getElementById('loading').style.display  = 'inline';
+
+      if (CACHE_DATA[year]) {
+        currentData = CACHE_DATA[year];
+        renderYear(currentData);
+        return;
+      }
+
+      const script  = document.createElement('script');
+      script.src    = 'data/esop_' + year + '.js';
+      script.onload = function () {
+        CACHE_DATA[year] = window.ESOP_CURRENT;
+        currentData      = CACHE_DATA[year];
+        renderYear(currentData);
+      };
+      script.onerror = function () {
+        document.getElementById('loading').textContent = 'Error loading ' + year;
+      };
+      document.head.appendChild(script);
+    }
+
+    // --- Slider ---
+    const slider = document.getElementById('year-slider');
+    let   debounceTimer = null;
+
+    slider.addEventListener('input', function () {
+      document.getElementById('year-label').textContent = this.value;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => loadYear(parseInt(this.value)), 150);
+    });
+
+    loadYear(2000);
+  </script>
+
+</body>
+</html>
