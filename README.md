@@ -2,10 +2,10 @@
 
 Interactive map and panel dataset of Employee Stock Ownership Plans (ESOPs) in the United States, 2000–2024, built from Form 5500 annual filings submitted to the U.S. Department of Labor.
 
-**Live map:** https://lydiagcamp.github.io/esop_us_map
-
 
 [Form 5500](https://www.dol.gov/agencies/ebsa/employers-and-advisers/plan-administration-and-compliance/reporting-and-filing/form-5500) is an annual filing required by the U.S. Department of Labor for employer-sponsored benefit plans. This project extracts all plans coded as ESOPs (Type of Pension Benefit Code `2O` or `2P`) filed between 2000 and 2024, geocodes their mailing addresses, and visualizes them on an interactive map.
+
+**Live map:** https://lydiagcamp.github.io/esop_us_map
 
 ---
 
