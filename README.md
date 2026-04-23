@@ -1,4 +1,4 @@
-# ESOP Plans in the United States
+# ESOPs in the United States
 
 Interactive map and panel dataset of Employee Stock Ownership Plans (ESOPs) in the United States, 2000–2024, built from Form 5500 annual filings.
 
