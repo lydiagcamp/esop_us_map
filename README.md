@@ -70,3 +70,7 @@ U.S. Department of Labor, Employee Benefits Security Administration —
 ## Author
 
 Lydia Camp · [lydiagcamp.github.io](https://lydiagcamp.github.io)
+
+---
+
+![Kelso](kelso.jpg)
