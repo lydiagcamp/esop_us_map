@@ -73,4 +73,8 @@ Lydia Camp · [lydiagcamp.github.io](https://lydiagcamp.github.io)
 
 ---
 
-![Kelso](kelso.jpg)
+<p align="center">
+  <img src="kelso.jpg" width="500">
+  <br>
+  <em>Source: Kelso Institute Europe</em>
+</p>
