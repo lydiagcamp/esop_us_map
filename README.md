@@ -50,12 +50,6 @@ Addresses were geocoded using the [U.S. Census Bureau Geocoder](https://geocodin
 
 ---
 
-## Map
-
-The interactive map is built with [Leaflet](https://leafletjs.com/) and hosted on GitHub Pages. Each dot represents one ESOP in a given year. Plans are color-coded by industry (9 groups derived from NAICS sector) and can be filtered by year using the slider (2000–2024). Click any dot for plan name, location, and the years it appears in the dataset.
-
----
-
 ## Repository structure
 
 ```
