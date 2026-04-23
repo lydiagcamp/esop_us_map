@@ -179,6 +179,78 @@
     }
     #legend-footer a:hover { text-decoration: underline; }
 
+    /* --- Form 5500 CTA button --- */
+    #form5500-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 7px 10px;
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      color: #444;
+      text-align: center;
+      cursor: pointer;
+      line-height: 1.35;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    #form5500-btn:hover { background: #efefef; color: #222; }
+
+    /* --- PDF modal overlay --- */
+    #pdf-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: rgba(0,0,0,0.55);
+      align-items: center;
+      justify-content: center;
+    }
+    #pdf-modal.open { display: flex; }
+    #pdf-modal-box {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+      width: min(860px, 92vw);
+      height: min(88vh, 700px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #pdf-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
+    #pdf-modal-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #333;
+    }
+    #pdf-modal-actions { display: flex; align-items: center; gap: 12px; }
+    #pdf-modal-newtab {
+      font-size: 0.72rem;
+      color: #666;
+      text-decoration: none;
+    }
+    #pdf-modal-newtab:hover { text-decoration: underline; }
+    #pdf-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #999;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+    }
+    #pdf-modal-close:hover { color: #333; }
+    #pdf-modal-frame { flex: 1; width: 100%; border: none; }
+
     /* Compact popups */
     .leaflet-popup-content {
       margin: 8px 12px;
@@ -219,12 +291,26 @@
     <div id="legend">
       <div id="legend-title">Industries</div>
       <div id="legend-items"></div>
+      <button id="form5500-btn">Click here for an example of a Form 5500 filing</button>
       <div id="legend-footer">
         <a href="https://lydiagcamp.github.io" target="_blank" rel="noopener">lydiagcamp.github.io</a>
       </div>
     </div>
 
     <div id="map-hint">Click any dot for plan details</div>
+
+    <div id="pdf-modal" role="dialog" aria-modal="true" aria-label="Form 5500 example">
+      <div id="pdf-modal-box">
+        <div id="pdf-modal-header">
+          <span id="pdf-modal-title">Example Form 5500 Filing</span>
+          <div id="pdf-modal-actions">
+            <a id="pdf-modal-newtab" href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
+            <button id="pdf-modal-close" aria-label="Close">&times;</button>
+          </div>
+        </div>
+        <iframe id="pdf-modal-frame" title="Form 5500 example"></iframe>
+      </div>
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -445,6 +531,33 @@
     });
 
     loadYear(2000);
+
+    // --- Form 5500 PDF viewer ---
+    const FORM5500_PDF_URL = 'form5500_example.pdf';
+
+    const pdfModal  = document.getElementById('pdf-modal');
+    const pdfFrame  = document.getElementById('pdf-modal-frame');
+    const pdfNewTab = document.getElementById('pdf-modal-newtab');
+
+    function openPdfModal() {
+      pdfFrame.src   = FORM5500_PDF_URL;
+      pdfNewTab.href = FORM5500_PDF_URL;
+      pdfModal.classList.add('open');
+    }
+
+    function closePdfModal() {
+      pdfModal.classList.remove('open');
+      pdfFrame.src = ''; // stop loading, free memory
+    }
+
+    document.getElementById('form5500-btn').addEventListener('click', openPdfModal);
+    document.getElementById('pdf-modal-close').addEventListener('click', closePdfModal);
+    pdfModal.addEventListener('click', function (e) {
+      if (e.target === pdfModal) closePdfModal(); // click backdrop to close
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePdfModal();
+    });
   </script>
 
 </body>
