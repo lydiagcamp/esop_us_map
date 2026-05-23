@@ -55,6 +55,12 @@ Addresses were geocoded using the [U.S. Census Bureau Geocoder](https://geocodin
 U.S. Department of Labor, Employee Benefits Security Administration —
 [Form 5500 Series](https://www.dol.gov/agencies/ebsa/employers-and-advisers/plan-administration-and-compliance/reporting-and-filing/form-5500).
 
+<p align="left">
+  <a href="./docs/data/form5500_example.pdf">
+    <img src="https://img.shields.io/badge/Click%20Here-See%20Example%20Form-2ea44f?style=for-the-badge" alt="Example Form">
+  </a>
+</p>
+
 ---
 
 ## Author
