@@ -20,5 +20,5 @@ US_STATES <- c(
 )
 
 # --- Output paths ---------------------------------------------------------------
-PROCESSED_DIR <- "data"
+PROCESSED_DIR <- "docs/data"
 DOCS_DATA_DIR <- "docs/data"
