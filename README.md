@@ -56,7 +56,7 @@ U.S. Department of Labor, Employee Benefits Security Administration —
 [Form 5500 Series](https://www.dol.gov/agencies/ebsa/employers-and-advisers/plan-administration-and-compliance/reporting-and-filing/form-5500).
 
 <p align="left">
-  <a href="./docs/data/form5500_example.pdf">
+  <a href="./docs/form5500_example.pdf">
     <img src="https://img.shields.io/badge/Form%205500-See%20Example-blue?style=for-the-badge" width="200">
   </a>
 </p>
