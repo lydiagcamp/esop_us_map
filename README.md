@@ -60,7 +60,6 @@ U.S. Department of Labor, Employee Benefits Security Administration —
     <img src="https://img.shields.io/badge/Form%205500-See%20Example-blue?style=for-the-badge" width="200">
   </a>
 </p>
----
 
 ## Author
 
