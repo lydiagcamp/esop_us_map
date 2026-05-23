@@ -16,7 +16,7 @@ Interactive map and panel dataset of Employee Stock Ownership Plans (ESOPs) in t
 
 `docs/data/esops_panel_geo.rds`
 
-A plan-year panel of **171,911 observations** covering **19,968 unique ESOP plans** across all 50 U.S. states. Plans enter and exit the panel as they are established or terminated; the average plan is observed for 8.6 years.
+A plan-year panel of **171,911 observations** covering **19,968 unique ESOP plans** across all 50 U.S. states from 2000-2024. Plans enter and exit the panel as they are established or terminated; the average plan is observed for 8.6 years.
 
 | Column | Description |
 |---|---|
