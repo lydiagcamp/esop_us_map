@@ -50,16 +50,6 @@ Addresses were geocoded using the [U.S. Census Bureau Geocoder](https://geocodin
 
 ---
 
-## Repository structure
-
-```
-docs/                    # GitHub Pages site (map + per-year data files)
-data and code/data/      # Downloadable dataset (RDS + CSV)
-data and code/code/      # R pipeline scripts
-```
-
----
-
 ## Data source
 
 U.S. Department of Labor, Employee Benefits Security Administration —
