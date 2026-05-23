@@ -16,7 +16,7 @@ Interactive map and panel dataset of Employee Stock Ownership Plans (ESOPs) in t
 
 `data and code/data/esops_panel_geo.rds` · `data and code/data/esops_panel_geo.csv`
 
-An unbalanced plan-year panel of **171,911 observations** covering **19,968 unique ESOP plans** across all 50 U.S. states. Plans enter and exit the panel as they are established or terminated; the average plan is observed for 8.6 years.
+A plan-year panel of **171,911 observations** covering **19,968 unique ESOP plans** across all 50 U.S. states. Plans enter and exit the panel as they are established or terminated; the average plan is observed for 8.6 years.
 
 | Column | Description |
 |---|---|
@@ -50,22 +50,16 @@ Addresses were geocoded using the [U.S. Census Bureau Geocoder](https://geocodin
 
 ---
 
-## Repository structure
-
-```
-docs/                    # GitHub Pages site (map + per-year data files)
-data and code/data/      # Downloadable dataset (RDS + CSV)
-data and code/code/      # R pipeline scripts
-```
-
----
-
 ## Data source
 
 U.S. Department of Labor, Employee Benefits Security Administration —
 [Form 5500 Series](https://www.dol.gov/agencies/ebsa/employers-and-advisers/plan-administration-and-compliance/reporting-and-filing/form-5500).
 
----
+<p align="left">
+  <a href="./docs/form5500_example.pdf">
+    <img src="https://img.shields.io/badge/Form%205500-See%20Example-blue?style=for-the-badge" width="200">
+  </a>
+</p>
 
 ## Author
 
