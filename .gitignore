@@ -1,3 +1,4 @@
-data-processed/*
-!data-processed/esops_panel_geo.rds
+data-processed/
+data/*
+!data/esops_panel_geo.rds
 .DS_Store
