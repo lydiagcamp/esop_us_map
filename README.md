@@ -57,7 +57,7 @@ U.S. Department of Labor, Employee Benefits Security Administration —
 
 <p align="left">
   <a href="./docs/data/form5500_example.pdf">
-    <img src="https://img.shields.io/badge/Form%205500-Example%20PDF-8ecae6?style=flat" width="230">
+    <img src="https://img.shields.io/badge/Form%205500-See%20Example-blue?style=for-the-badge" width="300">
   </a>
 </p>
 
