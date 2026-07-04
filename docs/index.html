@@ -76,7 +76,7 @@
     #search-input {
       width: 220px;
       max-width: 100%;
-      padding: 6px 10px;
+      padding: 6px 26px 6px 10px;
       font-size: 0.8rem;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -87,6 +87,24 @@
       outline: none;
       border-color: #888;
     }
+
+    #search-clear {
+      display: none;
+      position: absolute;
+      top: 50%;
+      right: 6px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1rem;
+      line-height: 1;
+      color: #999;
+      cursor: pointer;
+      padding: 2px 4px;
+    }
+
+    #search-clear:hover { color: #333; }
+    #search-clear.visible { display: block; }
 
     #search-results {
       display: none;
@@ -394,6 +412,7 @@
       <input type="range" id="year-slider" min="2000" max="2024" value="2000" step="1">
       <div id="search-wrap">
         <input type="text" id="search-input" placeholder="Search ESOP by company name&hellip;" autocomplete="off">
+        <button id="search-clear" aria-label="Clear search and reset map">&times;</button>
         <div id="search-results"></div>
       </div>
       <div id="stats">
@@ -473,7 +492,10 @@
     };
 
     // --- Map setup ---
-    const map = L.map('map', { zoomSnap: 0.5 }).setView([38.5, -96], 4);
+    const DEFAULT_VIEW = { center: [38.5, -96], zoom: 4 };
+    const DEFAULT_YEAR = 2000;
+
+    const map = L.map('map', { zoomSnap: 0.5 }).setView(DEFAULT_VIEW.center, DEFAULT_VIEW.zoom);
 
     L.tileLayer(
       'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
@@ -689,6 +711,26 @@
 
     const searchInput   = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
+    const searchClearBtn = document.getElementById('search-clear');
+
+    function resetMap() {
+      searchInput.value = '';
+      closeSearchResults();
+      searchClearBtn.classList.remove('visible');
+
+      if (searchMarker) {
+        map.removeLayer(searchMarker);
+        searchMarker = null;
+      }
+
+      slider.value = DEFAULT_YEAR;
+      document.getElementById('year-label').textContent = DEFAULT_YEAR;
+      loadYear(DEFAULT_YEAR);
+
+      map.setView(DEFAULT_VIEW.center, DEFAULT_VIEW.zoom);
+    }
+
+    searchClearBtn.addEventListener('click', resetMap);
 
     function closeSearchResults() {
       searchResults.classList.remove('open');
@@ -746,6 +788,7 @@
 
       searchInput.value = p.n;
       closeSearchResults();
+      searchClearBtn.classList.add('visible');
 
       const zoomLevel = Math.max(map.getZoom(), 9);
 
@@ -780,6 +823,7 @@
 
     searchInput.addEventListener('input', function () {
       const query = this.value.trim().toUpperCase();
+      searchClearBtn.classList.toggle('visible', query.length > 0);
       if (!query) {
         closeSearchResults();
         return;
