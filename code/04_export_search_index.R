@@ -3,7 +3,9 @@
 # Export a single all-years search index for the map's ESOP name lookup.
 # One row per unique plan (ein, pn), using that plan's first filing year
 # (yr1) location so the year-slider and pin position stay consistent when
-# a search result is selected.
+# a search result is selected. Plans with no geocoded location in yr1 are
+# still included (marked with has_loc = false) so they remain searchable
+# by name, but the front end disables map-jump behavior for them.
 #
 # Input  : docs/data/esops_panel_geo.rds
 # Output : docs/data/esop_search_index.js
@@ -23,7 +25,6 @@ year_range <- panel |>
 first_year_rows <- panel |>
   inner_join(year_range, by = c("ein", "pn")) |>
   filter(filing_year == yr1) |>
-  filter(!is.na(lat)) |>
   arrange(ein, pn, desc(coalesce(active_participants, -1L))) |>
   group_by(ein, pn) |>
   slice_head(n = 1) |>
@@ -31,14 +32,15 @@ first_year_rows <- panel |>
 
 index <- first_year_rows |>
   transmute(
-    id  = paste(ein, pn, sep = "-"),
-    n   = coalesce(canonical_name, plan_name),
-    c   = city,
-    s   = state,
-    lat = round(lat, 4),
-    lng = round(lng, 4),
-    yr1 = yr1,
-    yr2 = yr2
+    id      = paste(ein, pn, sep = "-"),
+    n       = coalesce(canonical_name, plan_name),
+    c       = city,
+    s       = state,
+    lat     = round(lat, 4),
+    lng     = round(lng, 4),
+    yr1     = yr1,
+    yr2     = yr2,
+    has_loc = !is.na(lat)
   ) |>
   filter(!is.na(n) & n != "") |>
   distinct(id, .keep_all = TRUE) |>

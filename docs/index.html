@@ -129,6 +129,18 @@
       font-size: 0.72rem;
     }
 
+    .search-result.no-loc {
+      cursor: default;
+    }
+
+    .search-result.no-loc:hover { background: none; }
+
+    .search-result.no-loc .r-name { color: #999; }
+
+    .search-result.no-loc .r-meta {
+      font-style: italic;
+    }
+
     .search-empty {
       padding: 8px 10px;
       font-size: 0.78rem;
@@ -167,6 +179,9 @@
     }
 
     #legend-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-weight: 600;
       font-size: 0.8rem;
       color: #333;
@@ -174,6 +189,39 @@
       padding-bottom: 6px;
       border-bottom: 1px solid #eee;
     }
+
+    #legend-close {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      line-height: 1;
+      color: #999;
+      cursor: pointer;
+      padding: 0 0 0 8px;
+    }
+
+    #legend-close:hover { color: #333; }
+
+    #legend.closed { display: none; }
+
+    #legend-reopen {
+      display: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 1000;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      color: #444;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      cursor: pointer;
+    }
+
+    #legend-reopen:hover { background: #f5f5f5; }
+    #legend-reopen.visible { display: block; }
 
     .legend-row {
       display: flex;
@@ -361,13 +409,18 @@
     <div id="map"></div>
 
     <div id="legend">
-      <div id="legend-title">Industries</div>
+      <div id="legend-title">
+        <span>Industries</span>
+        <button id="legend-close" aria-label="Close industries panel">&times;</button>
+      </div>
       <div id="legend-items"></div>
       <button id="form5500-btn">Click here for an example of a Form 5500 filing</button>
       <div id="legend-footer">
         <a href="https://lydiagcamp.github.io" target="_blank" rel="noopener">lydiagcamp.github.io</a>
       </div>
     </div>
+
+    <button id="legend-reopen">Show industries</button>
 
     <div id="map-hint">Click any dot for plan details</div>
 
@@ -604,6 +657,21 @@
 
     loadYear(2000);
 
+    // --- Legend show/hide ---
+    const legendEl        = document.getElementById('legend');
+    const legendCloseBtn   = document.getElementById('legend-close');
+    const legendReopenBtn  = document.getElementById('legend-reopen');
+
+    legendCloseBtn.addEventListener('click', function () {
+      legendEl.classList.add('closed');
+      legendReopenBtn.classList.add('visible');
+    });
+
+    legendReopenBtn.addEventListener('click', function () {
+      legendEl.classList.remove('closed');
+      legendReopenBtn.classList.remove('visible');
+    });
+
     // --- Company search (all years) ---
     let searchIndex = [];
     let searchMatches = [];
@@ -648,7 +716,7 @@
 
       matches.forEach((p, i) => {
         const row = document.createElement('div');
-        row.className = 'search-result';
+        row.className = 'search-result' + (p.has_loc ? '' : ' no-loc');
         row.dataset.idx = i;
 
         const name = document.createElement('span');
@@ -658,11 +726,15 @@
         const meta = document.createElement('span');
         meta.className = 'r-meta';
         const loc = (p.c && p.s) ? (p.c + ', ' + p.s + ' — ') : '';
-        meta.textContent = loc + 'first on record: ' + p.yr1;
+        meta.textContent = p.has_loc
+          ? (loc + 'first on record: ' + p.yr1)
+          : 'no location data — can’t show on map';
 
         row.appendChild(name);
         row.appendChild(meta);
-        row.addEventListener('click', () => selectSearchResult(p));
+        if (p.has_loc) {
+          row.addEventListener('click', () => selectSearchResult(p));
+        }
         searchResults.appendChild(row);
       });
 
@@ -670,6 +742,8 @@
     }
 
     function selectSearchResult(p) {
+      if (!p.has_loc) return;
+
       searchInput.value = p.n;
       closeSearchResults();
 
@@ -721,12 +795,21 @@
       const rows = searchResults.querySelectorAll('.search-result');
       if (!rows.length) return;
 
+      function nextEnabledIdx(start, dir) {
+        let i = start;
+        while (i >= 0 && i < searchMatches.length) {
+          if (searchMatches[i] && searchMatches[i].has_loc) return i;
+          i += dir;
+        }
+        return start;
+      }
+
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        searchActiveIdx = Math.min(searchActiveIdx + 1, rows.length - 1);
+        searchActiveIdx = nextEnabledIdx(Math.min(searchActiveIdx + 1, rows.length - 1), 1);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        searchActiveIdx = Math.max(searchActiveIdx - 1, 0);
+        searchActiveIdx = nextEnabledIdx(Math.max(searchActiveIdx - 1, 0), -1);
       } else if (e.key === 'Enter') {
         e.preventDefault();
         if (searchActiveIdx >= 0 && searchMatches[searchActiveIdx]) {
