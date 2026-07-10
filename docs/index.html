@@ -415,8 +415,8 @@
   <div id="header">
     <h1>ESOP Plans in the United States &mdash; Form 5500 filings</h1>
     <div id="controls">
-      <span id="year-label">2000</span>
-      <input type="range" id="year-slider" min="2000" max="2024" value="2000" step="1">
+      <span id="year-label">2024</span>
+      <input type="range" id="year-slider" min="2000" max="2024" value="2024" step="1">
       <div id="search-wrap">
         <input type="text" id="search-input" placeholder="Search ESOP by company name&hellip;" autocomplete="off">
         <button id="search-clear" aria-label="Clear search and reset map">&times;</button>
@@ -500,7 +500,7 @@
 
     // --- Map setup ---
     const DEFAULT_VIEW = { center: [38.5, -96], zoom: 4 };
-    const DEFAULT_YEAR = 2000;
+    const DEFAULT_YEAR = 2024;
 
     const map = L.map('map', { zoomSnap: 0.5 }).setView(DEFAULT_VIEW.center, DEFAULT_VIEW.zoom);
 
@@ -698,7 +698,7 @@
       debounceTimer = setTimeout(() => loadYear(parseInt(this.value)), 150);
     });
 
-    loadYear(2000);
+    loadYear(DEFAULT_YEAR);
 
     // --- Legend show/hide ---
     const legendEl        = document.getElementById('legend');
