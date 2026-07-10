@@ -2,7 +2,8 @@
 #
 # Export one JS file per year (2000-2024) for the interactive map.
 # Each point now carries: lat, lng, plan_name, city, state,
-# industry group (g), and the plan's first/last year in the dataset (yr1, yr2).
+# industry group (g), the plan's first/last year in the dataset (yr1, yr2),
+# and a company website URL (w) when one is on file (from 06_join_nceo_links.R).
 #
 # Industry grouping (10 groups, non-standard NAICS codes → Other):
 #   Manufacturing               : 31, 32, 33
@@ -95,7 +96,8 @@ for (yr in YEARS) {
       s   = state,
       g   = industry_group,
       yr1 = yr1,
-      yr2 = yr2
+      yr2 = yr2,
+      w   = website
     )
 
   payload <- list(

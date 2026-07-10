@@ -40,7 +40,8 @@ index <- first_year_rows |>
     lng     = round(lng, 4),
     yr1     = yr1,
     yr2     = yr2,
-    has_loc = !is.na(lat)
+    has_loc = !is.na(lat),
+    w       = website
   ) |>
   filter(!is.na(n) & n != "") |>
   distinct(id, .keep_all = TRUE) |>

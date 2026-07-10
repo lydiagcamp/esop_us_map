@@ -401,6 +401,13 @@
       color: #666;
       font-size: 0.78rem;
     }
+    .leaflet-popup-content b a {
+      color: #1a5cc8;
+      text-decoration: none;
+    }
+    .leaflet-popup-content b a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -589,7 +596,7 @@
           return L.circleMarker([p.lat, p.lng],
             Object.assign({}, MARKER_BASE, { fillColor: color })
           ).bindPopup(
-            '<b>' + (p.n ? escHtml(p.n) : '<em>Name not available</em>') + '</b>' +
+            '<b>' + nameLink(p.n, p.w) + '</b>' +
             (p.c && p.s
               ? '<span class="popup-meta">' + escHtml(p.c) + ', ' + escHtml(p.s) + '</span><br>'
               : '') +
@@ -634,6 +641,20 @@
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+    }
+
+    function escAttr(str) {
+      return escHtml(str).replace(/"/g, '&quot;');
+    }
+
+    // Renders the plan/company name as a link to its website when one is
+    // known and safe (http/https only), else falls back to plain bold text.
+    function nameLink(name, website) {
+      const label = name ? escHtml(name) : '<em>Name not available</em>';
+      if (website && /^https?:\/\//i.test(website)) {
+        return '<a href="' + escAttr(website) + '" target="_blank" rel="noopener noreferrer">' + label + '</a>';
+      }
+      return label;
     }
 
     function safeId(str) {
@@ -802,7 +823,7 @@
           fillOpacity: 0.9
         }).addTo(map);
         searchMarker.bindPopup(
-          '<b>' + escHtml(p.n) + '</b>' +
+          '<b>' + nameLink(p.n, p.w) + '</b>' +
           (p.c && p.s ? '<span class="popup-meta">' + escHtml(p.c) + ', ' + escHtml(p.s) + '</span><br>' : '') +
           '<span class="popup-meta">First on record: ' + p.yr1 + '</span>',
           { maxWidth: 280 }
