@@ -179,6 +179,11 @@
 
     #map { width: 100%; height: 100%; }
 
+    /* Mute the basemap so category markers stay legible */
+    #map .leaflet-tile-pane {
+      filter: grayscale(1) brightness(1.08) contrast(0.92);
+    }
+
     /* --- Floating legend panel --- */
     #legend {
       position: absolute;
@@ -505,9 +510,9 @@
     const map = L.map('map', { zoomSnap: 0.5 }).setView(DEFAULT_VIEW.center, DEFAULT_VIEW.zoom);
 
     L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
       }
     ).addTo(map);
